@@ -187,53 +187,45 @@
 }
 
 .code-block {
+  background-color: rgba(250, 250, 250, 0.426); 
   backdrop-filter: blur(8px); /* Optional: Adds a beautiful premium frosted-glass effect */
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
+** Keep this inline-block so it sits perfectly inline with the other panel buttons */
 .code-block-wrapper {
   position: relative;
   display: inline-block;
-   background: transparent;
 }
 
 /* Panel button text alignment properties */
 .code-panel-toggle {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-/* The primary interactive overlay floating panel layout context */
+/* The floating menu wrapper */
 .code-block-overlay {
+  display: flex;
+  flex-direction: column;
   position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  width: 1200px;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 200;
-  padding: 16px;
-  background-color: rgba(250, 250, 250, 0.158);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  padding: 5px;
 }
 
 /* Control buttons bar space wrapping layout */
 .editor-controls-bar {
   display: flex;
+  flex-direction: row;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 1px;
 }
 
-/* The strict bounding frame layout wrapper housing the Monaco Editor viewport */
 .monaco-editor-frame {
-  height: 600px;
-  width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  overflow: hidden;
-  background: transparent;
+  height: 600px !important; /* Force a strict height window */
+  width: 300px;
 }

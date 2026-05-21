@@ -1,0 +1,322 @@
+graph LR
+    %% --------------------------------------------------------
+    %% TARGET SCHEMA: Mimir (MaM)
+    %% --------------------------------------------------------
+    subgraph MaM_Schema [Mimir Data Model]
+        M_mimir_identifier((mimir_identifier))
+        M_date_released((date_released))
+        M_date_created((date_created))
+        M_date_modified((date_modified))
+        M_headline((headline))
+        M_description((description))
+        M_title((title))
+        M_keywords((keywords))
+        M_itpc_subject((itpc_subject))
+        M_location_shot((location_shot))
+        M_genre((genre))
+        M_creator((creator))
+        M_copyright_owner((copyright_owner))
+        M_copyright_notice((copyright_notice))
+        M_rights_usage_terms((rights_usage_terms))
+        M_supplier((supplier))
+        M_contributor((contributor))
+        M_credit_line((credit_line))
+        M_workflow_tag((workflow_tag))
+        M_status((status))
+        M_target_audience((target_audience))
+        M_app_exclusions((app_exclusions))
+        M_feed_identifier((feed_identifier))
+        M_video_version((video_version))
+        M_video_profile((video_profile))
+        M_video_rendition((video_rendition))
+        M_external_metadata_url((external_metadata_url))
+        M_parent_video_identifier((parent_video_identifier))
+        M_media_type((media_type))
+        M_file_name((file_name))
+        M_metadata_authority((metadata_authority))
+        M_metadata_editor((metadata_editor))
+        M_language((language))
+        M_registry_entry((registry_entry))
+        M_rights_metadata_identifier((rights_metadata_identifier))
+        M_admin_identifier((administrative_metadata_identifier))
+        M_transcript((transcript))
+        M_thumbnail_url((thumbnail_url))
+        M_audio_channels((audio_channels))
+        M_duration((duration))
+    end
+
+    %% --------------------------------------------------------
+    %% SOURCE 1: Reuters
+    %% --------------------------------------------------------
+    subgraph Source_Reuters [Reuters XML]
+        R_sent[sent]
+        R_sender[sender]
+        R_transmitId[transmitId]
+        R_priority[priority / urgency]
+        R_destination[destination]
+        R_channel[channel]
+        R_conformance[conformance / version]
+        R_guid[guid]
+        R_standard[standard / standardversion]
+        R_catalogRef[catalogRef.href]
+        R_copyrightHolder[copyrightHolder]
+        R_copyrightNotice[copyrightNotice]
+        R_usageTerms[usageTerms]
+        R_group_role[group role / groupSet / group / groupRef]
+        R_itemRef_residref[itemRef residref / itemRef]
+        R_itemClass[itemClass]
+        R_provider[provider / infoSource]
+        R_versionCreated[versionCreated]
+        R_firstCreated[firstCreated]
+        R_pubStatus[pubStatus]
+        R_role[role]
+        R_fileName[fileName]
+        R_generator[generator]
+        R_versionedId[versionedId]
+        R_language[language]
+        R_location[location / dateline]
+        R_creator[creator]
+        R_slugline[slugline]
+        R_headline[headline]
+        R_description[description]
+        R_contributor[contributor]
+        R_exclAudience[exclAudience]
+        R_altId[altId]
+        R_genre[genre]
+        R_keyword[keyword]
+        R_subject[subject]
+        R_by[by]
+        R_newsItem[newsItem / itemMeta]
+        R_rightsInfo[rightsInfo]
+        R_contentSet[contentSet]
+    end
+
+    R_sent --> M_date_released
+    R_sender --> M_metadata_authority
+    R_transmitId --> M_feed_identifier
+    R_priority --> M_workflow_tag
+    R_destination --> M_target_audience
+    R_channel --> M_workflow_tag
+    R_conformance --> M_video_version
+    R_guid --> M_mimir_identifier
+    R_standard --> M_video_profile
+    R_catalogRef --> M_external_metadata_url
+    R_copyrightHolder --> M_copyright_owner
+    R_copyrightNotice --> M_copyright_notice
+    R_usageTerms --> M_rights_usage_terms
+    R_group_role --> M_workflow_tag
+    R_itemRef_residref --> M_parent_video_identifier
+    R_itemClass --> M_media_type
+    R_provider --> M_supplier
+    R_versionCreated --> M_date_modified
+    R_firstCreated --> M_date_created
+    R_pubStatus --> M_status
+    R_role --> M_workflow_tag
+    R_fileName --> M_file_name
+    R_generator --> M_metadata_editor
+    R_versionedId --> M_video_rendition
+    R_language --> M_language
+    R_location --> M_location_shot
+    R_creator --> M_creator
+    R_slugline --> M_title
+    R_headline --> M_headline
+    R_description --> M_description
+    R_contributor --> M_contributor
+    R_exclAudience --> M_app_exclusions
+    R_altId --> M_registry_entry
+    R_genre --> M_genre
+    R_keyword --> M_keywords
+    R_subject --> M_itpc_subject
+    R_by --> M_credit_line
+    R_newsItem --> M_admin_identifier
+    R_rightsInfo --> M_rights_metadata_identifier
+    R_contentSet --> M_transcript
+
+    %% --------------------------------------------------------
+    %% SOURCE 2: VideoElephant
+    %% --------------------------------------------------------
+    subgraph Source_VE [VideoElephant MRSS]
+        VE_Category[Category]
+        VE_ChannelDesc[Channel Description]
+        VE_ChannelLink[Channel Link]
+        VE_ChannelPubDate[Channel PubDate]
+        VE_ChannelTitle[Channel Title]
+        VE_EnclosureURL[Enclosure URL]
+        VE_GUID[GUID]
+        VE_ItemDesc[Item Description]
+        VE_ItemPubDate[Item PubDate]
+        VE_ItemTitle[Item Title]
+        VE_MediaCategory[Media Category]
+        VE_MediaContentType[Media Content Type]
+        VE_MediaCredit[Media Credit]
+        VE_MediaCreditRole[Media Credit Role]
+        VE_MediaDuration[Media Duration]
+        VE_MediaKeywords[Media Keywords / Media Tags]
+        VE_MediaLanguage[Media Language]
+        VE_MediaThumbURL[Media Thumbnail URL]
+    end
+
+    VE_Category --> M_itpc_subject
+    VE_ChannelDesc --> M_description
+    VE_ChannelLink --> M_external_metadata_url
+    VE_ChannelPubDate --> M_date_released
+    VE_ChannelTitle --> M_headline
+    VE_EnclosureURL --> M_file_name
+    VE_GUID --> M_mimir_identifier
+    VE_ItemDesc --> M_description
+    VE_ItemPubDate --> M_date_released
+    VE_ItemTitle --> M_title
+    VE_MediaCategory --> M_genre
+    VE_MediaContentType --> M_media_type
+    VE_MediaCredit --> M_credit_line
+    VE_MediaCreditRole --> M_creator
+    VE_MediaDuration --> M_duration
+    VE_MediaKeywords --> M_keywords
+    VE_MediaLanguage --> M_language
+    VE_MediaThumbURL --> M_thumbnail_url
+
+    %% --------------------------------------------------------
+    %% SOURCE 3: Storyful
+    %% --------------------------------------------------------
+    subgraph Source_Storyful [Storyful MRSS]
+        SF_Author[Author]
+        SF_Category[Category]
+        SF_ChannelLink[Channel Atom Link]
+        SF_ChannelDesc[Channel Description]
+        SF_ChannelTitle[Channel Title]
+        SF_ContentEncoded[Content Encoded]
+        SF_Copyright[Copyright/Attribution]
+        SF_DateVerif[Date/Location/Source Verification]
+        SF_GUID[GUID]
+        SF_ItemDesc[Item Description / Summary]
+        SF_ItemPubDate[Item PubDate]
+        SF_ItemTitle[Item Title / Storyful Slug]
+        SF_Label[Label]
+        SF_MediaCategory[Media Category]
+        SF_MediaContentURL[Media Content URL / Storyful Video]
+        SF_MediaCredit[Media Credit]
+        SF_MediaKeywords[Media Keywords]
+        SF_MediaRights[Media Rights / Storyful Clearance]
+        SF_OriginalPubDate[Original PubDate]
+        SF_StatedLocation[Stated Location]
+        SF_StoryfulChannel[Storyful Channel]
+        SF_StoryfulOrigin[Storyful Origin]
+    end
+
+    SF_Author --> M_creator
+    SF_Category --> M_itpc_subject
+    SF_ChannelLink --> M_external_metadata_url
+    SF_ChannelDesc --> M_description
+    SF_ChannelTitle --> M_headline
+    SF_ContentEncoded --> M_transcript
+    SF_Copyright --> M_copyright_owner
+    SF_DateVerif --> M_workflow_tag
+    SF_GUID --> M_mimir_identifier
+    SF_ItemDesc --> M_description
+    SF_ItemPubDate --> M_date_released
+    SF_ItemTitle --> M_title
+    SF_Label --> M_keywords
+    SF_MediaCategory --> M_genre
+    SF_MediaContentURL --> M_file_name
+    SF_MediaCredit --> M_credit_line
+    SF_MediaKeywords --> M_keywords
+    SF_MediaRights --> M_rights_usage_terms
+    SF_OriginalPubDate --> M_date_created
+    SF_StatedLocation --> M_location_shot
+    SF_StoryfulChannel --> M_workflow_tag
+    SF_StoryfulOrigin --> M_supplier
+
+    %% --------------------------------------------------------
+    %% SOURCE 4: NY Post
+    %% --------------------------------------------------------
+    subgraph Source_NYP [NY Post MRSS]
+        NYP_AtomLink[Atom Link / Feed Link]
+        NYP_Description[Description / Feed Description]
+        NYP_FeedTitle[Feed Title]
+        NYP_GUID[GUID]
+        NYP_JWQuality[JW Player Quality Suffix]
+        NYP_JWVideoID[JW Player Video ID]
+        NYP_Language[Language]
+        NYP_MediaCategory[Media Category]
+        NYP_MediaChannels[Media Content Channels]
+        NYP_MediaDuration[Media Content Duration]
+        NYP_MediaContentType[Media Content Type]
+        NYP_MediaCopyright[Media Copyright]
+        NYP_MediaKeywords[Media Keywords]
+        NYP_MediaRating[Media Rating / Restriction]
+        NYP_MediaStatus[Media Status]
+        NYP_MediaSubURL[Media Subtitle URL]
+        NYP_MediaThumb[Media Thumbnail]
+        NYP_MediaTitle[Media Title]
+        NYP_MediaVideo[Media Video]
+        NYP_PublishDate[Publish Date]
+    end
+
+    NYP_AtomLink --> M_external_metadata_url
+    NYP_Description --> M_description
+    NYP_FeedTitle --> M_headline
+    NYP_GUID --> M_mimir_identifier
+    NYP_JWQuality --> M_video_rendition
+    NYP_JWVideoID --> M_registry_entry
+    NYP_Language --> M_language
+    NYP_MediaCategory --> M_itpc_subject
+    NYP_MediaChannels --> M_audio_channels
+    NYP_MediaDuration --> M_duration
+    NYP_MediaContentType --> M_media_type
+    NYP_MediaCopyright --> M_copyright_owner
+    NYP_MediaKeywords --> M_keywords
+    NYP_MediaRating --> M_app_exclusions
+    NYP_MediaStatus --> M_status
+    NYP_MediaSubURL --> M_external_metadata_url
+    NYP_MediaThumb --> M_thumbnail_url
+    NYP_MediaTitle --> M_title
+    NYP_MediaVideo --> M_file_name
+    NYP_PublishDate --> M_date_released
+
+    %% --------------------------------------------------------
+    %% SOURCE 5: WSJ
+    %% --------------------------------------------------------
+    subgraph Source_WSJ [WSJ MRSS]
+        WSJ_ChannelDesc[Channel Description]
+        WSJ_ChannelLink[Channel Link / Link]
+        WSJ_ChannelTitle[Channel Title]
+        WSJ_Copyright[Copyright]
+        WSJ_Description[Description / Item Description]
+        WSJ_GUID[GUID / Media GUID]
+        WSJ_ImageURL[Image URL]
+        WSJ_ItemTitle[Item Title / Media Title]
+        WSJ_Language[Language]
+        WSJ_MediaCategory[Media Category]
+        WSJ_MediaContentURL[Media Content URL]
+        WSJ_MediaCreditRole[Media Credit Role]
+        WSJ_MediaDuration[Media Duration]
+        WSJ_MediaFormat[Media Format]
+        WSJ_MediaID[Media ID]
+        WSJ_MediaKeywords[Media Keywords / Omniture Keywords]
+        WSJ_PublicationDate[Publication Date]
+    end
+
+    WSJ_ChannelDesc --> M_description
+    WSJ_ChannelLink --> M_external_metadata_url
+    WSJ_ChannelTitle --> M_headline
+    WSJ_Copyright --> M_copyright_owner
+    WSJ_Description --> M_description
+    WSJ_GUID --> M_mimir_identifier
+    WSJ_ImageURL --> M_thumbnail_url
+    WSJ_ItemTitle --> M_title
+    WSJ_Language --> M_language
+    WSJ_MediaCategory --> M_itpc_subject
+    WSJ_MediaContentURL --> M_file_name
+    WSJ_MediaCreditRole --> M_creator
+    WSJ_MediaDuration --> M_duration
+    WSJ_MediaFormat --> M_media_type
+    WSJ_MediaID --> M_registry_entry
+    WSJ_MediaKeywords --> M_keywords
+    WSJ_PublicationDate --> M_date_released
+
+    %% Styling
+    classDef schemaNode fill:#4CAF50,stroke:#2E7D32,stroke-width:2px,color:white;
+    class M_mimir_identifier,M_date_released,M_date_created,M_date_modified,M_headline,M_description,M_title,M_keywords,M_itpc_subject,M_location_shot,M_genre,M_creator,M_copyright_owner,M_copyright_notice,M_rights_usage_terms,M_supplier,M_contributor,M_credit_line,M_workflow_tag,M_status,M_target_audience,M_app_exclusions,M_feed_identifier,M_video_version,M_video_profile,M_video_rendition,M_external_metadata_url,M_parent_video_identifier,M_media_type,M_file_name,M_metadata_authority,M_metadata_editor,M_language,M_registry_entry,M_rights_metadata_identifier,M_admin_identifier,M_transcript,M_thumbnail_url,M_audio_channels,M_duration schemaNode;
+
+    classDef sourceNode fill:#E3F2FD,stroke:#1565C0,stroke-width:1px;
+    class R_sent,R_sender,R_transmitId,R_priority,R_destination,R_channel,R_conformance,R_guid,R_standard,R_catalogRef,R_copyrightHolder,R_copyrightNotice,R_usageTerms,R_group_role,R_itemRef_residref,R_itemClass,R_provider,R_versionCreated,R_firstCreated,R_pubStatus,R_role,R_fileName,R_generator,R_versionedId,R_language,R_location,R_creator,R_slugline,R_headline,R_description,R_contributor,R_exclAudience,R_altId,R_genre,R_keyword,R_subject,R_by,R_newsItem,R_rightsInfo,R_contentSet,VE_Category,VE_ChannelDesc,VE_ChannelLink,VE_ChannelPubDate,VE_ChannelTitle,VE_EnclosureURL,VE_GUID,VE_ItemDesc,VE_ItemPubDate,VE_ItemTitle,VE_MediaCategory,VE_MediaContentType,VE_MediaCredit,VE_MediaCreditRole,VE_MediaDuration,VE_MediaKeywords,VE_MediaLanguage,VE_MediaThumbURL,SF_Author,SF_Category,SF_ChannelLink,SF_ChannelDesc,SF_ChannelTitle,SF_ContentEncoded,SF_Copyright,SF_DateVerif,SF_GUID,SF_ItemDesc,SF_ItemPubDate,SF_ItemTitle,SF_Label,SF_MediaCategory,SF_MediaContentURL,SF_MediaCredit,SF_MediaKeywords,SF_MediaRights,SF_OriginalPubDate,SF_StatedLocation,SF_StoryfulChannel,SF_StoryfulOrigin,NYP_AtomLink,NYP_Description,NYP_FeedTitle,NYP_GUID,NYP_JWQuality,NYP_JWVideoID,NYP_Language,NYP_MediaCategory,NYP_MediaChannels,NYP_MediaDuration,NYP_MediaContentType,NYP_MediaCopyright,NYP_MediaKeywords,NYP_MediaRating,NYP_MediaStatus,NYP_MediaSubURL,NYP_MediaThumb,NYP_MediaTitle,NYP_MediaVideo,NYP_PublishDate,WSJ_ChannelDesc,WSJ_ChannelLink,WSJ_ChannelTitle,WSJ_Copyright,WSJ_Description,WSJ_GUID,WSJ_ImageURL,WSJ_ItemTitle,WSJ_Language,WSJ_MediaCategory,WSJ_MediaContentURL,WSJ_MediaCreditRole,WSJ_MediaDuration,WSJ_MediaFormat,WSJ_MediaID,WSJ_MediaKeywords,WSJ_PublicationDate sourceNode;
