@@ -10,6 +10,7 @@ declare module '*?raw' {
   export default content;
 }
 
+declare module 'web-vitals';
 
 
 declare module '*.svg' {
