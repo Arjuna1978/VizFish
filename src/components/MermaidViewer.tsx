@@ -133,13 +133,10 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
 
       exportSVG: async (fileName: string): Promise<string | undefined> => {
         if (!svgContent) return undefined;
-
         const baseName = fileName.replace(/\.[^/.]+$/, "");
         const exportName = `${baseName}.svg`;
-
         const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
         const url = URL.createObjectURL(blob);
-        
         const link = document.createElement("a");
         link.href = url;
         link.download = exportName;
@@ -147,7 +144,6 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-
         return exportName;
       }
     }));

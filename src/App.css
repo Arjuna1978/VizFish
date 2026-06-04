@@ -188,13 +188,13 @@
 
 .code-block {
   backdrop-filter: blur(8px); /* Optional: Adds a beautiful premium frosted-glass effect */
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.047);
 }
 
 .code-block-wrapper {
   position: relative;
   display: inline-block;
-   background: transparent;
+  background-color: transparent;
 }
 
 /* Panel button text alignment properties */
@@ -214,8 +214,7 @@
   z-index: 200;
   padding: 16px;
   background-color: rgba(250, 250, 250, 0.158);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -235,5 +234,5 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   overflow: hidden;
-  background: transparent;
+  background-color: rgba(0, 0, 0, 0.047);
 }

@@ -29,9 +29,8 @@ export function LoadTextButton({
     monacoInstance: Monaco
   ) {
     try {
-      // Establish a transparent background theme style for Monaco
       monacoInstance.editor.defineTheme("transparent-theme", {
-        base: "vs-light",
+        base: "vs-dark",
         inherit: true,
         rules: [],
         colors: {
