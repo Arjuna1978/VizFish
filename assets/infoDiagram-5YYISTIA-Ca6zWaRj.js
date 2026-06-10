@@ -1,0 +1,2 @@
+import{$t as e,Mn as t,Nn as n,gt as r}from"./index-Z8BGX5W9.js";import{t as i}from"./mermaid-parser.core-B7jY4JeA.js";var a={parse:t(async e=>{let t=await i(`info`,e);n.debug(t)},`parse`)},o={version:`11.15.0`},s={parser:a,db:{getVersion:t(()=>o.version,`getVersion`)},renderer:{draw:t((t,i,a)=>{n.debug(`rendering info diagram
+`+t);let o=r(i);e(o,100,400,!0),o.append(`g`).append(`text`).attr(`x`,100).attr(`y`,40).attr(`class`,`version`).attr(`font-size`,32).style(`text-anchor`,`middle`).text(`v${a}`)},`draw`)}};export{s as diagram};
