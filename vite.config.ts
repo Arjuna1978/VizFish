@@ -5,7 +5,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
    plugins: [react(), viteTsconfigPaths()],
-  base: '/VizFish/',
+  base: './',
   server: {
     port: 3000,
   },
