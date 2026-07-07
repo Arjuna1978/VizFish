@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Editor, { type Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import initializeMermaidLanguage from "monaco-mermaid";
@@ -24,6 +24,10 @@ export function LoadTextButton({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [codeValue, setCodeValue] = useState<string>(initialDefinition);
 
+  useEffect(() => {
+    setCodeValue(initialDefinition);
+  }, [initialDefinition]);
+  
   function handleEditorDidMount(
     _editor: monaco.editor.IStandaloneCodeEditor, 
     monacoInstance: Monaco
@@ -34,7 +38,7 @@ export function LoadTextButton({
         inherit: true,
         rules: [],
         colors: {
-          "editor.background": "#cecece00",
+          "editor.background": "#cececeaf",
           "editorGutter.background": "#00000000"
         }
       });
@@ -51,15 +55,21 @@ export function LoadTextButton({
 
   function handleLoad() {
     if (!codeValue.trim()) return;
+    const definition = codeValue
     onDefinitionLoaded({
-      definition: codeValue,
+      definition,
       fileName: "pasted-diagram.mmd"
     });
     setIsOpen(false);
   }
 
   function handleCancel() {
-    setCodeValue("");
+    setCodeValue(initialDefinition)
+    const definition = initialDefinition 
+    onDefinitionLoaded({
+       definition,
+      fileName: "pasted-diagram.mmd"
+    });
     setIsOpen(false);
   }
 
@@ -90,8 +100,8 @@ export function LoadTextButton({
 
           <div className="monaco-editor-frame">
             <Editor
-              height="100%"
-              width="100%"
+              height="600px"
+              width="800px"
               language="mermaid"
               theme= 'transparent-theme'
               value={codeValue}
@@ -99,8 +109,8 @@ export function LoadTextButton({
               onMount={handleEditorDidMount}
               options={{
                 automaticLayout: true,
-                minimap: { enabled: false },
-                fontSize: 12,
+                minimap: { enabled: true },
+                fontSize: 17,
                 lineNumbers: "on",
                 scrollBeyondLastLine: false,
                 tabSize: 2,

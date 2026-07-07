@@ -95,7 +95,6 @@
   box-shadow: var(--primary-shadow) !important;
   border-radius: var(--panel-roundess) !important;
   padding: 16px;
-  width: 550px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -210,7 +209,8 @@
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: 1200px;
+  width: max-content;
+  height: max-content;
   z-index: 200;
   padding: 16px;
   background-color: rgba(250, 250, 250, 0.158);
@@ -229,8 +229,8 @@
 
 /* The strict bounding frame layout wrapper housing the Monaco Editor viewport */
 .monaco-editor-frame {
-  height: 600px;
-  width: 100%;
+  height: max-content;
+  width:max-content;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   overflow: hidden;
