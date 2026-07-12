@@ -6,6 +6,7 @@ import { MermaidViewer, type MermaidViewerHandle } from "./components/MermaidVie
 import { LoadButton } from "./components/LoadButton";
 import { SaveSVGButton } from "./components/SaveSVGButton";
 import { SaveButton } from  "./components/SaveButton"
+import {SaveDrawIOButton} from "./components/SaveDrawIOButton"
 import { LoadTextButton } from "./components/LoadTextButton"
 
 import logo from "./resources/logo.svg";
@@ -72,6 +73,12 @@ function App() {
           {/* 2. Added the Save MMD Button option into the panel track */}
           <SaveButton
             label="MMD"
+            SvgImage={downImage}
+            definition={def}
+            fileName={fileName}
+          />
+          <SaveDrawIOButton
+            label="Draw.io"
             SvgImage={downImage}
             definition={def}
             fileName={fileName}
