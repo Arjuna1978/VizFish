@@ -106,7 +106,6 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
 
         try {
           if (onError) onError(null);
-
           const parseResult = await mermaid.parse(definition, { suppressErrors: true });
           if (parseResult === false) {
             throw new Error("Syntax error: Please check your diagram syntax.");
@@ -152,7 +151,6 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
       <div 
         ref={containerRef} 
         className="mermaid-viewer-canvas"
-        style={{ width: "100%", height: "100%", overflow: "hidden" }}
         dangerouslySetInnerHTML={{ __html: svgContent }}
       />
     );

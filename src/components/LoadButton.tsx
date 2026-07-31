@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import "../App.css";
 
 interface LoadButtonProps {
   label?: string;

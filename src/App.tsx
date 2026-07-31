@@ -49,11 +49,11 @@ function App() {
   return (
     <div className="app">
       <header className="floating-header">
-        <img src={logo} alt="Logo" width="50px" />
+        <img className= "app-logo"src={logo} alt="Logo" />
         <h1 className="app-title">VizFish</h1>
       </header>
 
-      <main className="app-main">
+      <main>
         <div className="button-panel">
           <LoadButton 
             label="MMD" 
