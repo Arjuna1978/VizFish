@@ -61,7 +61,7 @@ function App() {
             onDefinitionLoaded={handleLoadDefinition} 
           />
           <LoadTextButton 
-          key={fileName}
+            key={fileName}
             label="Code" 
             initialDefinition={def}
             PlayImage={playImage} 
