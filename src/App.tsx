@@ -35,7 +35,7 @@ function App() {
 
   function handleLoadDefinition({ definition, fileName }: { definition: string; fileName: string }) {
     setFileName(fileName);
-    setDef(definition); // Accurately registers updates to the master string reference
+    setDef(definition); 
     return viewerRef.current?.importDefinition(definition);
   }
 
@@ -67,6 +67,7 @@ function App() {
             PlayImage={playImage} 
             StopImage={stopImage} 
             SvgImage={txtImage} 
+            FileName={fileName}
             onDefinitionLoaded={handleLoadDefinition} 
           />
           

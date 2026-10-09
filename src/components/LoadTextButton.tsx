@@ -9,6 +9,7 @@ interface LoadTextButtonProps {
   initialDefinition?: string;
   StopImage?: string;
   PlayImage?: string;
+  FileName?:string;
   onDefinitionLoaded: (options: { definition: string; fileName: string }) => void;
 }
 
@@ -19,22 +20,25 @@ export function LoadTextButton({
   onDefinitionLoaded,
   label = "Code",
   initialDefinition = "",
+  FileName = "pasted-diagram.mmd",
 }: LoadTextButtonProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [codeValue, setCodeValue] = useState<string>(initialDefinition);
+  const [saveFileName, setSaveFileName] = useState<string>("pasted-diagram.mmd");
 
   useEffect(() => {
     setCodeValue(initialDefinition);
+    setSaveFileName(FileName);
   }, [initialDefinition]);
 
   const handleBeforeMount = (monacoInstance: Monaco) => {
     try {
       monacoInstance.editor.defineTheme("transparent-theme", {
-        base: "vs-dark",
+        base: "vs",
         inherit: true,
         rules: [],
         colors: {
-          "editor.background": "#dce9a60e",
+          "editor.background": "#dce9a618",
           "editorGutter.background": "#0000002c",
         },
       });
@@ -47,17 +51,18 @@ export function LoadTextButton({
 
   const handleEditorChange = (value: string | undefined) => {
     setCodeValue(value ?? "");
+    onDefinitionLoaded({
+      definition: codeValue,
+      fileName: saveFileName,
+    });
   };
 
   const handleLoad = () => {
     if (!codeValue.trim()) return;
     
-    const definition = codeValue;
-    const fileName = "pasted-diagram.mmd";
-
     onDefinitionLoaded({
-      definition,
-      fileName,
+      definition: codeValue,
+      fileName: saveFileName,
     });
     setIsOpen(false);
   };
@@ -66,7 +71,7 @@ export function LoadTextButton({
     setCodeValue(initialDefinition);
     onDefinitionLoaded({
       definition: initialDefinition,
-      fileName: "pasted-diagram.mmd",
+      fileName: saveFileName,
     });
     setIsOpen(false);
   };
