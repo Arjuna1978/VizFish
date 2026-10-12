@@ -37,11 +37,11 @@ function App() {
 
   function handleLoadDefinition({ definition, fileName }: { definition: string; fileName: string }) {
     setFileName(fileName);
-    setDef(definition);
     setSyntaxError(null); // Clear previous errors on new load attempt
     
     try {
       viewerRef.current?.importDefinition(definition);
+      setDef(definition);
       setLastValidDef(definition);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to parse definition";
@@ -82,7 +82,7 @@ function App() {
           />
           <LoadTextButton 
             label="Code" 
-            initialDefinition={def}
+            initialDefinition={lastValidDef}
             PlayImage={playImage} 
             StopImage={stopImage} 
             SvgImage={txtImage} 

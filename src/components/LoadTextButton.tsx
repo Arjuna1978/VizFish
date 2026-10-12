@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Editor, { type Monaco } from "@monaco-editor/react";
 import initializeMermaidLanguage from "monaco-mermaid";
+import mermaid from "mermaid";
 import "../App.css";
 
 interface LoadTextButtonProps {
@@ -29,14 +30,9 @@ export function LoadTextButton({
 }: LoadTextButtonProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // Resolve fallback definition
-  const baseDefinition = initialDefinition.trim()
-    ? initialDefinition
-    : defaultDef;
-
-  // Track the active working value in the editor
-  const [codeValue, setCodeValue] = useState<string>(baseDefinition);
-  const [currentFileName, setCurrentFileName] = useState<string>(fileName);
+  // Clean lazy initialization using fallback logic
+  const [codeValue, setCodeValue] = useState<string>(() => initialDefinition || defaultDef); //original defenition
+  const [savedDefinition, setSavedDefinition] = useState<string>(() => initialDefinition || defaultDef);
 
   const handleBeforeMount = (monacoInstance: Monaco) => {
     try {
@@ -49,47 +45,56 @@ export function LoadTextButton({
           "editorGutter.background": "#91946655",
         },
       });
-
       initializeMermaidLanguage(monacoInstance);
     } catch (error) {
-      console.warn(
-        "Mermaid language configuration initialization warning:",
-        error,
-      );
+      console.warn("Mermaid language configuration initialization warning:", error);
+    }
+  };
+
+
+  const validateAndSaveDefinition = async (value: string) => {
+if (!value.trim()) return;
+    try {
+      await mermaid.parse(value);
+      onDefinitionLoaded({
+        definition: value,
+        fileName,
+      });
+    } catch {
+      return;
     }
   };
 
   const handleEditorChange = (value: string | undefined) => {
-    setCodeValue(value ?? "");
+    const newValue = value ?? "";
+    validateAndSaveDefinition(newValue);
+    setSavedDefinition(newValue);
   };
 
-  const handleLoad = () => {
+  const handlePlay = () => {
     if (!codeValue.trim()) return;
-
     onDefinitionLoaded({
-      definition: codeValue,
-      fileName: currentFileName,
+      definition: savedDefinition,
+      fileName,
     });
     setIsOpen(false);
   };
 
   const handleOpenClick = () => {
-    // Every time you open the modal, sync back to the latest initialDefinition prop
-    // so you always start fresh or revert to the correct base definition.
-    const freshDefinition = initialDefinition.trim()
-      ? initialDefinition
-      : defaultDef;
-    setCodeValue(freshDefinition);
-    setCurrentFileName(fileName);
+    if (initialDefinition?.trim() && initialDefinition !== savedDefinition) {
+      setCodeValue(initialDefinition);
+      setSavedDefinition(initialDefinition);
+    } else {
+      setCodeValue(savedDefinition || defaultDef);
+    }
     setIsOpen(true);
   };
 
   const handleCancel = () => {
-    // Revert the editor text back to the original initialDefinition prop
-    const originalDefinition = initialDefinition.trim()
-      ? initialDefinition
-      : defaultDef;
-    setCodeValue(originalDefinition);
+        onDefinitionLoaded({
+      definition: savedDefinition,
+      fileName,
+    });
     setIsOpen(false);
   };
 
@@ -109,22 +114,18 @@ export function LoadTextButton({
           <div className="editor-controls-bar">
             <button
               type="button"
-              onClick={handleLoad}
+              onClick={handlePlay}
               className="panel-button"
               disabled={!codeValue.trim()}
             >
-              {PlayImage && (
-                <img src={PlayImage} alt="Load" width="24" height="24" />
-              )}
+              {PlayImage && <img src={PlayImage} alt="Load" width="24" height="24" />}
             </button>
             <button
               type="button"
               onClick={handleCancel}
               className="panel-button"
             >
-              {StopImage && (
-                <img src={StopImage} alt="Stop" width="24" height="24" />
-              )}
+              {StopImage && <img src={StopImage} alt="Stop" width="24" height="24" />}
             </button>
           </div>
 
