@@ -5,12 +5,12 @@ import defaultMmd from "./assets/default.mmd?raw";
 import { MermaidViewer, type MermaidViewerHandle } from "./components/MermaidViewer";
 import { LoadButton } from "./components/LoadButton";
 import { SaveSVGButton } from "./components/SaveSVGButton";
-import { SaveButton } from  "./components/SaveButton"
-import {SaveDrawIOButton} from "./components/SaveDrawIOButton"
-import { LoadTextButton } from "./components/LoadTextButton"
+import { SaveButton } from  "./components/SaveButton";
+import { SaveDrawIOButton } from "./components/SaveDrawIOButton";
+import { LoadTextButton } from "./components/LoadTextButton";
 
 import logo from "./resources/logo.svg";
-import downImage from "./resources/down.svg"; // Reuse or change icon asset if preferred
+import downImage from "./resources/down.svg";
 import upImage from "./resources/up.svg";
 import txtImage from "./resources/codePad.svg";
 import playImage from "./resources/play.svg";
@@ -20,6 +20,7 @@ function App() {
   const viewerRef = useRef<MermaidViewerHandle>(null);
   const [fileName, setFileName] = useState<string>("my-diagram.mmd");
   const [def, setDef] = useState<string>('');
+  const [lastValidDef, setLastValidDef] = useState<string>('');
   const [syntaxError, setSyntaxError] = useState<string | null>(null);
 
   // Synchronise initial default diagram once on mount
@@ -27,7 +28,8 @@ function App() {
     const initTimeout = setTimeout(() => {
       if (viewerRef.current && defaultMmd) {
         viewerRef.current.importDefinition(defaultMmd);
-        setDef(defaultMmd); // Ensure default state matches initial paint tracking
+        setDef(defaultMmd);
+        setLastValidDef(defaultMmd);
       }
     }, 50);
     return () => clearTimeout(initTimeout);
@@ -35,9 +37,27 @@ function App() {
 
   function handleLoadDefinition({ definition, fileName }: { definition: string; fileName: string }) {
     setFileName(fileName);
-    setDef(definition); 
-    return viewerRef.current?.importDefinition(definition);
+    setDef(definition);
+    setSyntaxError(null); // Clear previous errors on new load attempt
+    
+    try {
+      viewerRef.current?.importDefinition(definition);
+      setLastValidDef(definition);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to parse definition";
+      viewerRef.current?.importDefinition(lastValidDef);
+      setSyntaxError(message);
+    }
   }
+
+  // Rollback handler to restore the last working diagram definition
+  const handleRollback = () => {
+    if (lastValidDef) {
+      setDef(lastValidDef);
+      setSyntaxError(null);
+      viewerRef.current?.importDefinition(lastValidDef);
+    }
+  };
 
   async function handleExportSVG() {
     const savedFileName = await viewerRef.current?.exportSVG(fileName);
@@ -49,7 +69,7 @@ function App() {
   return (
     <div className="app">
       <header className="floating-header">
-        <img className= "app-logo"src={logo} alt="Logo" />
+        <img className="app-logo" src={logo} alt="Logo" />
         <h1 className="app-title">VizFish</h1>
       </header>
 
@@ -61,17 +81,16 @@ function App() {
             onDefinitionLoaded={handleLoadDefinition} 
           />
           <LoadTextButton 
-            key={fileName}
             label="Code" 
             initialDefinition={def}
             PlayImage={playImage} 
             StopImage={stopImage} 
             SvgImage={txtImage} 
-            FileName={fileName}
+            fileName={fileName}
+            defaultDef={defaultMmd}
             onDefinitionLoaded={handleLoadDefinition} 
           />
           
-          {/* 2. Added the Save MMD Button option into the panel track */}
           <SaveButton
             label="MMD"
             SvgImage={downImage}
@@ -93,8 +112,18 @@ function App() {
         </div>
 
         {syntaxError && (
-          <div className="syntax-error-banner">
-            <strong>Parser Syntax Error:</strong> {syntaxError}
+          <div className="syntax-error-banner" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <strong>Parser Syntax Error:</strong> {syntaxError}
+            </div>
+            <button 
+              type="button" 
+              className="panel-button" 
+              onClick={handleRollback}
+              style={{ marginLeft: "1rem", padding: "4px 8px", fontSize: "0.85rem" }}
+            >
+              Rollback to Last Valid Version
+            </button>
           </div>
         )}
 
@@ -105,7 +134,12 @@ function App() {
         </div>
 
         <div className="canvas-container">
-          <MermaidViewer ref={viewerRef} onError={setSyntaxError} />
+          <MermaidViewer 
+            ref={viewerRef} 
+            onError={(err) => {
+              setSyntaxError(err);
+            }} 
+          />
         </div>
       </main>
     </div>

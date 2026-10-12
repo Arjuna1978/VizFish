@@ -14,6 +14,7 @@ export interface MermaidViewerHandle {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
+  clearCanvas: () => void; // Added missing method to interface
 }
 
 interface MermaidViewerProps {
@@ -35,7 +36,6 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
       }
     };
 
-    //Graceful shutdown
     useEffect(() => {
       return () => destroyPanZoomInstance();
     }, []);
@@ -44,38 +44,39 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
       if (!svgContent || !containerRef.current) return;
       const svgElement = containerRef.current.querySelector("svg") as SVGElement | null;
       if (!svgElement) return;
+
       destroyPanZoomInstance();
       svgElement.style.width = "100%";
       svgElement.style.height = "100%";
       svgElement.style.maxWidth = "none";
       svgElement.style.minHeight = "100%";
 
-  if (!svgElement.getAttribute("viewBox")) {
-  const svgGraphics = svgElement as unknown as SVGSVGElement;
-  if (typeof svgGraphics.getBBox === "function") {
-    const bbox = svgGraphics.getBBox();
-    if (bbox && bbox.width > 0 && bbox.height > 0) {
-      svgElement.setAttribute("viewBox", `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
-    }
-  }
-}
+      if (!svgElement.getAttribute("viewBox")) {
+        const svgGraphics = svgElement as unknown as SVGSVGElement;
+        if (typeof svgGraphics.getBBox === "function") {
+          const bbox = svgGraphics.getBBox();
+          if (bbox && bbox.width > 0 && bbox.height > 0) {
+            svgElement.setAttribute("viewBox", `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
+          }
+        }
+      }
 
       try {
         panZoomInstanceRef.current = svgPanZoom(svgElement, {
           zoomEnabled: true,
-          controlIconsEnabled: false, // Disables conflicting native library button elements
+          controlIconsEnabled: false,
           fit: true,
           center: true,
           minZoom: 0.05,
           maxZoom: 20,
           mouseWheelZoomEnabled: true,
           dblClickZoomEnabled: true,
-          preventMouseEventsDefault: true // Prevents browser scroll jumping during diagram interactions
+          preventMouseEventsDefault: true,
         });
       } catch (e) {
         console.error("Pan-zoom initialization skipped: ", e);
       }
-    }, [svgContent]); // Re-fires instantly whenever a fresh graph description string is updated
+    }, [svgContent]);
 
     useImperativeHandle(ref, () => ({
       clearCanvas: () => {
@@ -96,6 +97,7 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
           panZoomInstanceRef.current.center();
         }
       },
+
       importDefinition: async (definition: string) => {
         if (!definition.trim()) {
           destroyPanZoomInstance();
@@ -103,15 +105,10 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
           if (onError) onError(null);
           return;
         }
-
         try {
           if (onError) onError(null);
-          const parseResult = await mermaid.parse(definition, { suppressErrors: true });
-          if (parseResult === false) {
-            throw new Error("Syntax error: Please check your diagram syntax.");
-          }
+          await mermaid.parse(definition);
 
-          // Render the updated diagram layout structure
           const result = await mermaid.render(containerId, definition);
           setSvgContent(result.svg);
 
@@ -124,8 +121,10 @@ export const MermaidViewer = forwardRef<MermaidViewerHandle, MermaidViewerProps>
             }
           }, 0);
 
-        } catch (err) {
+        } catch (err: unknown) {
           const message = err instanceof Error ? err.message : "Unknown parsing error";
+          console.warn("Caught Mermaid parsing error:", message);
+          setSvgContent("");
           if (onError) onError(message);
         }
       },
