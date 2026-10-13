@@ -66,7 +66,6 @@ export function LoadTextButton({
   const handleOpenClick = () => {
     if (initialDefinition?.trim() && initialDefinition !== savedDefinition) {
       setCodeValue(initialDefinition);
-      setSavedDefinition(initialDefinition);
     } else {
       setCodeValue(savedDefinition || defaultDef);
     }
@@ -74,7 +73,6 @@ export function LoadTextButton({
   };
 
   const handleCancel = () => {
-    setCodeValue(savedDefinition);
     setIsOpen(false);
   };
 

@@ -12,6 +12,7 @@ interface LoadTextButtonProps {
   PlayImage?: string;
   fileName?: string;
   defaultDef?: string;
+
   onDefinitionLoaded: (options: {
     definition: string;
     fileName: string;
@@ -28,11 +29,12 @@ export function LoadTextButton({
   initialDefinition,
   defaultDef = "",
 }: LoadTextButtonProps): React.JSX.Element {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // Clean lazy initialization using fallback logic
-  const [codeValue, setCodeValue] = useState<string>(() => initialDefinition || defaultDef); //original defenition
-  const [savedDefinition, setSavedDefinition] = useState<string>(() => initialDefinition || defaultDef);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [orignialCode, setOriginalCode] = useState<string>(() => initialDefinition || defaultDef);
+  const [codeValue, setCodeValue] = useState<string>(() => initialDefinition || defaultDef);
+  
+  // Single source of truth for the active editor text
 
   const handleBeforeMount = (monacoInstance: Monaco) => {
     try {
@@ -51,15 +53,16 @@ export function LoadTextButton({
     }
   };
 
-
   const validateAndSaveDefinition = async (value: string) => {
-if (!value.trim()) return;
+    if (!value.trim()) return;
     try {
+      console.info("validate");
       await mermaid.parse(value);
       onDefinitionLoaded({
         definition: value,
-        fileName,
+        fileName: fileName,
       });
+
     } catch {
       return;
     }
@@ -68,33 +71,21 @@ if (!value.trim()) return;
   const handleEditorChange = (value: string | undefined) => {
     const newValue = value ?? "";
     validateAndSaveDefinition(newValue);
-    setSavedDefinition(newValue);
   };
 
   const handlePlay = () => {
-    if (!codeValue.trim()) return;
-    onDefinitionLoaded({
-      definition: savedDefinition,
-      fileName,
-    });
+    console.info("play 1");
     setIsOpen(false);
   };
 
   const handleOpenClick = () => {
-    if (initialDefinition?.trim() && initialDefinition !== savedDefinition) {
-      setCodeValue(initialDefinition);
-      setSavedDefinition(initialDefinition);
-    } else {
-      setCodeValue(savedDefinition || defaultDef);
-    }
+    setCodeValue(initialDefinition || defaultDef);
+    setOriginalCode(initialDefinition || defaultDef);
     setIsOpen(true);
   };
 
   const handleCancel = () => {
-        onDefinitionLoaded({
-      definition: savedDefinition,
-      fileName,
-    });
+    validateAndSaveDefinition(orignialCode);
     setIsOpen(false);
   };
 

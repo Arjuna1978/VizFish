@@ -19,9 +19,7 @@ import stopImage from "./resources/cancel.svg";
 function App() {
   const viewerRef = useRef<MermaidViewerHandle>(null);
   const [fileName, setFileName] = useState<string>("my-diagram.mmd");
-  const [def, setDef] = useState<string>('');
-  const [lastValidDef, setLastValidDef] = useState<string>('');
-  const [syntaxError, setSyntaxError] = useState<string | null>(null);
+  const [def, setDef] = useState<string>(defaultMmd);
 
   // Synchronise initial default diagram once on mount
   useEffect(() => {
@@ -29,35 +27,28 @@ function App() {
       if (viewerRef.current && defaultMmd) {
         viewerRef.current.importDefinition(defaultMmd);
         setDef(defaultMmd);
-        setLastValidDef(defaultMmd);
       }
     }, 50);
     return () => clearTimeout(initTimeout);
   }, []);
 
-  function handleLoadDefinition({ definition, fileName }: { definition: string; fileName: string }) {
-    setFileName(fileName);
-    setSyntaxError(null); // Clear previous errors on new load attempt
+  function handleLoadDefinition({ definition, fileName="na"}: { definition: string; fileName: string }) {
+console.info("load def");
+    console.info(definition);
     
-    try {
-      viewerRef.current?.importDefinition(definition);
-      setDef(definition);
-      setLastValidDef(definition);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to parse definition";
-      viewerRef.current?.importDefinition(lastValidDef);
-      setSyntaxError(message);
+    setDef(definition);
+    
+    if (fileName && fileName !== "na") {
+      setFileName(fileName);
+    }
+    
+    if (viewerRef.current && definition) {
+      viewerRef.current.importDefinition(definition);
     }
   }
 
   // Rollback handler to restore the last working diagram definition
-  const handleRollback = () => {
-    if (lastValidDef) {
-      setDef(lastValidDef);
-      setSyntaxError(null);
-      viewerRef.current?.importDefinition(lastValidDef);
-    }
-  };
+ 
 
   async function handleExportSVG() {
     const savedFileName = await viewerRef.current?.exportSVG(fileName);
@@ -82,7 +73,7 @@ function App() {
           />
           <LoadTextButton 
             label="Code" 
-            initialDefinition={lastValidDef}
+            initialDefinition={def}
             PlayImage={playImage} 
             StopImage={stopImage} 
             SvgImage={txtImage} 
@@ -111,21 +102,6 @@ function App() {
           />
         </div>
 
-        {syntaxError && (
-          <div className="syntax-error-banner" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <strong>Parser Syntax Error:</strong> {syntaxError}
-            </div>
-            <button 
-              type="button" 
-              className="panel-button" 
-              onClick={handleRollback}
-              style={{ marginLeft: "1rem", padding: "4px 8px", fontSize: "0.85rem" }}
-            >
-              Rollback to Last Valid Version
-            </button>
-          </div>
-        )}
 
         <div className="canvas-control-panel">
           <button className="panel-button" onClick={() => viewerRef.current?.zoomIn()}>+</button>
@@ -136,9 +112,7 @@ function App() {
         <div className="canvas-container">
           <MermaidViewer 
             ref={viewerRef} 
-            onError={(err) => {
-              setSyntaxError(err);
-            }} 
+
           />
         </div>
       </main>
