@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Editor, { type Monaco } from "@monaco-editor/react";
 import initializeMermaidLanguage from "monaco-mermaid";
+import mermaid from "mermaid";
 import "../App.css";
 
 interface LoadTextButtonProps {
@@ -29,7 +30,8 @@ export function LoadTextButton({
 }: LoadTextButtonProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const [codeValue, setCodeValue] = useState<string>(() => initialDefinition || defaultDef);
+  // Clean lazy initialization using fallback logic
+  const [codeValue, setCodeValue] = useState<string>(() => initialDefinition || defaultDef); //original defenition
   const [savedDefinition, setSavedDefinition] = useState<string>(() => initialDefinition || defaultDef);
 
   const handleBeforeMount = (monacoInstance: Monaco) => {
@@ -49,15 +51,30 @@ export function LoadTextButton({
     }
   };
 
-  const handleEditorChange = (value: string | undefined) => {
-    setCodeValue(value ?? "");
+
+  const validateAndSaveDefinition = async (value: string) => {
+if (!value.trim()) return;
+    try {
+      await mermaid.parse(value);
+      onDefinitionLoaded({
+        definition: value,
+        fileName,
+      });
+    } catch {
+      return;
+    }
   };
 
-  const handleLoad = () => {
+  const handleEditorChange = (value: string | undefined) => {
+    const newValue = value ?? "";
+    validateAndSaveDefinition(newValue);
+    setSavedDefinition(newValue);
+  };
+
+  const handlePlay = () => {
     if (!codeValue.trim()) return;
-    setSavedDefinition(codeValue);
     onDefinitionLoaded({
-      definition: codeValue,
+      definition: savedDefinition,
       fileName,
     });
     setIsOpen(false);
@@ -74,7 +91,10 @@ export function LoadTextButton({
   };
 
   const handleCancel = () => {
-    setCodeValue(savedDefinition);
+        onDefinitionLoaded({
+      definition: savedDefinition,
+      fileName,
+    });
     setIsOpen(false);
   };
 
@@ -94,7 +114,7 @@ export function LoadTextButton({
           <div className="editor-controls-bar">
             <button
               type="button"
-              onClick={handleLoad}
+              onClick={handlePlay}
               className="panel-button"
               disabled={!codeValue.trim()}
             >
