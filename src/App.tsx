@@ -3,18 +3,28 @@ import "./App.css";
 
 import defaultMmd from "./assets/default.mmd?raw";
 import { MermaidViewer, type MermaidViewerHandle } from "./components/MermaidViewer";
+
+
+import logo from "./resources/logo.svg";
+
+// buttons for the button panel
 import { LoadButton } from "./components/LoadButton";
 import { SaveSVGButton } from "./components/SaveSVGButton";
 import { SaveButton } from  "./components/SaveButton"
 import {SaveDrawIOButton} from "./components/SaveDrawIOButton"
 import { LoadTextButton } from "./components/LoadTextButton"
 
-import logo from "./resources/logo.svg";
-import downImage from "./resources/down.svg"; // Reuse or change icon asset if preferred
+// Images for buttons for the button panel
+import downImage from "./resources/down.svg"; 
 import upImage from "./resources/up.svg";
+
+// Images for the CodePad button panel
 import txtImage from "./resources/codePad.svg";
 import playImage from "./resources/play.svg";
 import stopImage from "./resources/cancel.svg";
+import ideaImage from "./resources/idea.svg";
+
+
 
 function App() {
   const viewerRef = useRef<MermaidViewerHandle>(null);
@@ -67,6 +77,7 @@ function App() {
             def={def}
             PlayImage={playImage} 
             StopImage={stopImage} 
+            IdeaImage={ideaImage}
             SvgImage={txtImage} 
             onDefinitionLoaded={handleLoadDefinition} 
           />
